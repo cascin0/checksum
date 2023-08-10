@@ -1,5 +1,5 @@
 # checksum
-This simple demo to better understand what a checksum is and how it works in the context of network systems.
+This is a simple demo to better understand what a checksum is and how it works in the context of network systems.
 
 # How to run
 Start the server with `python3 src/server.py 8080`, where the first argument is the listening port.
