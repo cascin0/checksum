@@ -1,8 +1,6 @@
 import random
 import socket
-
-SERVER_HOST = '0.0.0.0'
-SERVER_PORT = 8080
+import argparse
 
 CHECKSUM_DIVISOR = 256
 
@@ -26,8 +24,15 @@ def create_packet(data):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('server_host', type=str)
+    parser.add_argument('server_port', type=int)
+    args = parser.parse_args()
+
+    assert 1024 <= args.server_port <= 49151
+
     with socket.socket() as client_socket:
-        client_socket.connect((SERVER_HOST, SERVER_PORT))
+        client_socket.connect((args.server_host, args.server_port))
 
         data = bytearray(b'Hello from client')
         packet = create_packet(data)

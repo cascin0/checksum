@@ -1,7 +1,5 @@
 import socket
-
-SERVER_HOST = '0.0.0.0'
-SERVER_PORT = 8080
+import argparse
 
 READ_BUFFER_SIZE = 1024
 CHECKSUM_DIVISOR = 256
@@ -13,10 +11,16 @@ def get_checksum(data):
     return sum(data) % CHECKSUM_DIVISOR
 
 def main():
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
-        server_socket.bind((SERVER_HOST, SERVER_PORT))
+    parser = argparse.ArgumentParser()
+    parser.add_argument('server_port', type=int)
+    args = parser.parse_args()
 
-        print(f'Listening at port {SERVER_PORT}')
+    assert 1024 <= args.server_port <= 49151
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+        server_socket.bind(('0.0.0.0', args.server_port))
+
+        print(f'Listening at port {args.server_port}')
         server_socket.listen()
 
         # Only the first connection is accepted
