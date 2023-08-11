@@ -16,17 +16,22 @@ A percentage of them will have an (artificially) altered message, and the server
 
 The console output of the server should be something like:
 ```
-Received: b'Hello', Checksum: OK
-Received: b'Hello world', Checksum: OK
-Received: b'Hello from clien\x00', Checksum: ERROR
-Received: b'Hello world', Checksum: OK
-Received: b'\x00ello', Checksum: ERROR
-Received: b'Hello from cli\x00nt', Checksum: ERROR
-Received: b'Hello worl\x00', Checksum: ERROR
-Received: b'Hello world', Checksum: OK
-Received: b'Hello world', Checksum: OK
-Received: b'He\x00lo', Checksum: ERROR
-Received: b'Hello from client', Checksum: OK
+Received: Hello from client, Checksum: OK
+Received: Hello from client, Checksum: OK
+Received: ello, Checksum: ERROR
+Received: Hllo from client, Checksum: ERROR
+Received: ello world, Checksum: ERROR
+Received: Hello world, Checksum: OK
+Received: Hello frm client, Checksum: ERROR
+Received: Hello frm client, Checksum: ERROR
+Received: Hello from clint, Checksum: ERROR
+Received: Hello, Checksum: OK
+Received: Hello world, Checksum: OK
+Received: Helo from client, Checksum: ERROR
+Received: Helo from client, Checksum: ERROR
+Received: Hell world, Checksum: ERROR
+Received: ello from client, Checksum: ERROR
+Received: Hello from client, Checksum: OK
 ```
 
 Note that the server has a timeout on blocking socket operations of 5 seconds, after that it will gracefully close.
