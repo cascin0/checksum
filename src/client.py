@@ -10,13 +10,12 @@ NUM_PACKETS_TO_SEND = 2000
 def create_packet(data):
   packet = bytearray()
 
-  header = len(data).to_bytes(HEADER_SIZE_BYTES)  # 32 bits header
+  header = len(data).to_bytes(HEADER_SIZE_BYTES)
   data_checksum = get_checksum(data)
 
   packet.extend(header)
   packet.extend(data)
-  packet.extend(data_checksum.to_bytes(
-      DATA_CHECKSUM_SIZE_BYTES))  # 8 bits checksum
+  packet.extend(data_checksum.to_bytes(MESSAGE_CHECKSUM_SIZE_BYTES))
 
   return packet
 
@@ -46,7 +45,7 @@ def main():
 
       client_socket.sendto(packet, (args.server_host, args.server_port))
 
-      print(packet)
+    print('Packets sent')
 
 
 if __name__ == '__main__':

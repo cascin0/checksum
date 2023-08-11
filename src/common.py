@@ -1,8 +1,8 @@
 CHECKSUM_DIVISOR = 256
 
 HEADER_SIZE_BYTES = 4
-DATA_CHECKSUM_SIZE_BYTES = 1
+MESSAGE_CHECKSUM_SIZE_BYTES = 1
 
 
 def get_checksum(data):
-    return sum(data) % CHECKSUM_DIVISOR
+  return sum(data) % CHECKSUM_DIVISOR

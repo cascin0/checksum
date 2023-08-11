@@ -22,7 +22,7 @@ def main():
 
     data = bytearray()
 
-    current_segment_len = 4  # Header bytes
+    current_segment_len = HEADER_SIZE_BYTES
     current_segment = 0
     current_message = ''
 
@@ -49,7 +49,7 @@ def main():
             current_message = current_segment_data
             print(f'Received:', current_message.decode('utf-8'), end='')
             current_segment = 2
-            current_segment_len = 1
+            current_segment_len = MESSAGE_CHECKSUM_SIZE_BYTES
           else:
             print(f', Checksum: ', end='')
             checksum = int.from_bytes(current_segment_data, 'big')
