@@ -8,7 +8,7 @@ Start the client with `python3 src/client.py 127.0.0.1 8080`, where the first ar
 
 As soon as you launch the client, it will start sending some packets to the server.
 The format of the packets is the following:
-- 4 bytes for the length of the message (necessary since they're selected at random)
+- 4 bytes for the length of the message (necessary since it's selected at random)
 - A variable number of bytes for the message
 - 1 byte for the checksum of the message
 
