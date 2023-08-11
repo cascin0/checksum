@@ -1,53 +1,52 @@
 import random
 import socket
 import argparse
+from common import *
 
-CHECKSUM_DIVISOR = 256
 
-HEADER_SIZE_BYTES = 4
-DATA_CHECKSUM_SIZE_BYTES = 1
+NUM_PACKETS_TO_SEND = 2000
 
-def get_checksum(data):
-    return sum(data) % CHECKSUM_DIVISOR
 
 def create_packet(data):
-    packet = bytearray()
+  packet = bytearray()
 
-    header = len(data).to_bytes(HEADER_SIZE_BYTES) # 32 bits header
-    data_checksum = get_checksum(data)
+  header = len(data).to_bytes(HEADER_SIZE_BYTES)  # 32 bits header
+  data_checksum = get_checksum(data)
 
-    packet.extend(header)
-    packet.extend(data)
-    packet.extend(data_checksum.to_bytes(DATA_CHECKSUM_SIZE_BYTES)) # 8 bits checksum
+  packet.extend(header)
+  packet.extend(data)
+  packet.extend(data_checksum.to_bytes(
+      DATA_CHECKSUM_SIZE_BYTES))  # 8 bits checksum
 
-    return packet
+  return packet
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('server_host', type=str)
-    parser.add_argument('server_port', type=int)
-    args = parser.parse_args()
+  parser = argparse.ArgumentParser()
+  parser.add_argument('server_host', type=str)
+  parser.add_argument('server_port', type=int)
+  args = parser.parse_args()
 
-    assert 1024 <= args.server_port <= 49151
+  assert 1024 <= args.server_port <= 49151
 
-    with socket.socket() as client_socket:
-        client_socket.connect((args.server_host, args.server_port))
+  possible_messages = [b'Hello', b'Hello from client', b'Hello world']
+  possible_packets = [create_packet(message) for message in possible_messages]
 
-        data = bytearray(b'Hello from client')
-        packet = create_packet(data)
+  with socket.socket() as client_socket:
+    client_socket.connect((args.server_host, args.server_port))
+    data_segment_start = HEADER_SIZE_BYTES
 
-        data_segment_start = HEADER_SIZE_BYTES
-        data_segment_end = data_segment_start + len(data)
+    for _ in range(NUM_PACKETS_TO_SEND):
+      random_message_index = random.randrange(0, len(possible_messages))
+      packet = possible_packets[random_message_index].copy()
 
-        for _ in range(20):
-            packet_ = packet.copy()
+      if random.random() < 0.5:
+        data_len = len(possible_messages[random_message_index])
+        random_data_offset = random.randrange(0, data_len)
+        packet[data_segment_start + random_data_offset] = 0
 
-            if random.random() < 0.5:
-                random_data_offset = random.randrange(0, len(data)-1)
-                packet_[data_segment_start + random_data_offset] = 0
+      client_socket.sendall(packet)
 
-            client_socket.sendall(packet_)
 
 if __name__ == '__main__':
-    main()
+  main()
