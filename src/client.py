@@ -32,8 +32,7 @@ def main():
   possible_messages = [b'Hello', b'Hello from client', b'Hello world']
   possible_packets = [create_packet(message) for message in possible_messages]
 
-  with socket.socket() as client_socket:
-    client_socket.connect((args.server_host, args.server_port))
+  with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as client_socket:
     data_segment_start = HEADER_SIZE_BYTES
 
     for _ in range(NUM_PACKETS_TO_SEND):
@@ -45,7 +44,7 @@ def main():
         random_data_offset = random.randrange(0, data_len)
         packet[data_segment_start + random_data_offset] = 0
 
-      client_socket.sendall(packet)
+      client_socket.sendto(packet, (args.server_host, args.server_port))
 
 
 if __name__ == '__main__':

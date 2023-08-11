@@ -28,3 +28,5 @@ Received: b'Hello world', Checksum: OK
 Received: b'He\x00lo', Checksum: ERROR
 Received: b'Hello from client', Checksum: OK
 ```
+
+Note that the server has a timeout on blocking socket operations of 5 seconds, after that it will gracefully close.
