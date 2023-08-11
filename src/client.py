@@ -46,6 +46,8 @@ def main():
 
       client_socket.sendto(packet, (args.server_host, args.server_port))
 
+      print(packet)
+
 
 if __name__ == '__main__':
   main()

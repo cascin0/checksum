@@ -20,37 +20,47 @@ def main():
 
     prev_client_address = None
 
+    data = bytearray()
+
+    current_segment_len = 4  # Header bytes
+    current_segment = 0
+    current_message = ''
+
     while True:
       try:
-        header_segment, client_address = server_socket.recvfrom(
-            HEADER_SIZE_BYTES)
+        new_data, client_address = server_socket.recvfrom(READ_BUFFER_SIZE)
+        data.extend(new_data)
 
         # For this simple example, the server only commmunicates
         # with a single client
         prev_client_address = prev_client_address or client_address
         if prev_client_address != client_address:
           print('Unrecognized client')
-          continue
+          break
 
-        header = header_segment[:HEADER_SIZE_BYTES]
-        data_len = int.from_bytes(header, 'big')
+        while len(data) >= current_segment_len:
+          current_segment_data = data[:current_segment_len]
+          data = data[current_segment_len:]
 
-        data_segment, client_address = server_socket.recvfrom(
-            data_len + DATA_CHECKSUM_SIZE_BYTES)
+          if current_segment == 0:
+            current_segment = 1
+            current_segment_len = int.from_bytes(current_segment_data, 'big')
+          elif current_segment == 1:
+            current_message = current_segment_data
+            print(f'Received:', current_message.decode('utf-8'), end='')
+            current_segment = 2
+            current_segment_len = 1
+          else:
+            print(f', Checksum: ', end='')
+            checksum = int.from_bytes(current_segment_data, 'big')
+            if get_checksum(current_message) == checksum:
+              print('OK')
+            else:
+              print('ERROR')
+            current_message = ''
+            current_segment = 0
+            current_segment_len = 4
 
-        # For this simple example, the server only commmunicates
-        # with a single client
-        prev_client_address = prev_client_address or client_address
-        if prev_client_address != client_address:
-          print('Unrecognized client')
-          continue
-
-        data = data_segment[:data_len]
-        data_checksum = int.from_bytes(
-            data_segment[data_len:data_len+DATA_CHECKSUM_SIZE_BYTES], 'big')
-
-        print(f'Received: {data}, Checksum: ', end='')
-        print('OK') if get_checksum(data) == data_checksum else print('ERROR')
       except TimeoutError:
         break
 
